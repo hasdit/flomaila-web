@@ -17,8 +17,7 @@ export function parseContactsCsv(text: string): { ok: Contact[]; errors: string[
   const idx = (n: string) => header.indexOf(n);
   const cell = (cols: string[], n: string) => (idx(n) >= 0 ? (cols[idx(n)] || "").trim() : "");
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(",");
-    const email = cell(cols, "email");
+    const cols = lines[i].split(","); const email = cell(cols, "email");
     if (!email.includes("@")) { errors.push(`Row ${i + 1}: invalid email`); continue; }
     ok.push({ email, first_name: cell(cols, "first_name"), last_name: cell(cols, "last_name"), phone: cell(cols, "phone"), country: cell(cols, "country"), locale: cell(cols, "locale"), tags: cell(cols, "tags"), source: cell(cols, "source"), custom_1: cell(cols, "custom_1"), custom_2: cell(cols, "custom_2"), custom_3: cell(cols, "custom_3") });
   }
@@ -35,6 +34,14 @@ export function loadCampaigns(): Campaign[] {
 }
 export function sendCampaign(name: string, subject: string, body: string) {
   const c: Campaign = { id: crypto.randomUUID(), name, subject, body, sentAt: new Date().toISOString(), recipients: loadContacts().length };
-  localStorage.setItem(KKEY, JSON.stringify([c, ...loadCampaigns()]));
-  return c;
+  localStorage.setItem(KKEY, JSON.stringify([c, ...loadCampaigns()])); return c;
+}
+export function deleteContact(email: string) {
+  saveContacts(loadContacts().filter((c) => c.email.toLowerCase() !== email.toLowerCase()));
+  return loadContacts();
+}
+export function deleteCampaign(id: string) {
+  const all = loadCampaigns().filter((c) => c.id !== id);
+  localStorage.setItem(KKEY, JSON.stringify(all));
+  return all;
 }

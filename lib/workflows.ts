@@ -7,11 +7,13 @@ export function loadWorkflows(): Workflow[] {
 }
 export function saveWorkflow(w: Workflow) {
   const all = [w, ...loadWorkflows().filter((x) => x.id !== w.id)];
-  localStorage.setItem(KEY, JSON.stringify(all));
-  return all;
+  localStorage.setItem(KEY, JSON.stringify(all)); return all;
 }
 export function toggleWorkflow(id: string) {
   const all = loadWorkflows().map((w) => (w.id === id ? { ...w, active: !w.active } : w));
-  localStorage.setItem(KEY, JSON.stringify(all));
-  return all;
+  localStorage.setItem(KEY, JSON.stringify(all)); return all;
+}
+export function deleteWorkflow(id: string) {
+  const all = loadWorkflows().filter((w) => w.id !== id);
+  localStorage.setItem(KEY, JSON.stringify(all)); return all;
 }
