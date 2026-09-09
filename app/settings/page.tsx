@@ -1,7 +1,9 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 import { Card, PageHeader } from "@/components/app-shell";
+import { addWorkspace } from "@/lib/workspaces";
 import { defaults, loadSettings, saveSettings, type Settings } from "@/lib/settings";
+import { logEvent } from "@/lib/activity";
 export default function SettingsPage() {
   const [s, setS] = useState<Settings>(defaults);
   useEffect(() => { setS(loadSettings()); }, []);
@@ -29,6 +31,14 @@ export default function SettingsPage() {
         </Card>
         <button className="rounded-full bg-brand px-4 py-2 text-sm text-white" type="submit">Save settings</button>
       </form>
+      <Card className="mt-4">
+        <p className="font-medium">New workspace</p>
+        <form className="mt-2 flex flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); const data = new FormData(e.currentTarget); addWorkspace(String(data.get("name") || "Workspace"), String(data.get("country") || "US")); logEvent("workspace", "Added workspace"); e.currentTarget.reset(); }}>
+          <input name="name" placeholder="Name" className="rounded-xl border px-3 py-2 text-sm" required />
+          <input name="country" placeholder="Country" defaultValue="US" className="rounded-xl border px-3 py-2 text-sm" />
+          <button className="rounded-full border px-4 py-2 text-sm" type="submit">Add</button>
+        </form>
+      </Card>
     </>
   );
 }
