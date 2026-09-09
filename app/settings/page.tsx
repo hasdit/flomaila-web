@@ -17,7 +17,11 @@ export default function SettingsPage() {
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <input className="rounded-xl border px-3 py-2" value={s.country} onChange={(e) => setS({ ...s, country: e.target.value })} />
             <input className="rounded-xl border px-3 py-2" value={s.currency} onChange={(e) => setS({ ...s, currency: e.target.value })} />
+            <input className="rounded-xl border px-3 py-2" value={s.locale} onChange={(e) => setS({ ...s, locale: e.target.value })} />
+            <input className="rounded-xl border px-3 py-2" value={s.quietStart} onChange={(e) => setS({ ...s, quietStart: e.target.value })} />
+            <input className="rounded-xl border px-3 py-2" value={s.quietEnd} onChange={(e) => setS({ ...s, quietEnd: e.target.value })} />
           </div>
+          <label className="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" checked={s.notifications} onChange={(e) => setS({ ...s, notifications: e.target.checked })} />Notifications</label>
         </Card>
         <Card>
           <p className="font-medium">AI behavior</p>
