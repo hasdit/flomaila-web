@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #c2410c;
+  --brand-hover: #9a3412;
+  --tint: #fff7ed;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-stone-50 text-stone-800 antialiased;
+}
