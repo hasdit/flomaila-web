@@ -5,14 +5,19 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/client": "^6.16.1",
     "next": "^15.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "lucide-react": "^0.544.0",
-    "clsx": "^2.1.1"
+    "clsx": "^2.1.1",
+    "prisma": "^6.16.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
