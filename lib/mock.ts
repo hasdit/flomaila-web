@@ -6,7 +6,7 @@ export const nav: NavItem[] = [
   { href: "/orders", label: "Sales", children: [{ href: "/orders", label: "Orders" }, { href: "/catalog", label: "Products" }, { href: "/parcels", label: "Parcels" }] },
   { href: "/train", label: "Train", children: [{ href: "/train", label: "AI Setup" }, { href: "/train/content", label: "Train Content" }] },
   { href: "/email", label: "Email", children: [{ href: "/email", label: "Studio" }, { href: "/email/workflows", label: "Workflows" }] },
-  { href: "/activity", label: "Activity" }, { href: "/insights", label: "Insights" }, { href: "/billing", label: "Billing" }, { href: "/settings", label: "Settings" }, { href: "/help", label: "Help" },
+  { href: "/activity", label: "Activity" }, { href: "/insights", label: "Insights" }, { href: "/billing", label: "Billing" }, { href: "/settings", label: "Settings" }, { href: "/help", label: "Help" }, { href: "/tools", label: "Tools" },
 ];
 export const products: { id: string; title: string; sku: string; price: number; stock: number }[] = [];
 export const orders: unknown[] = [];
