@@ -23,6 +23,7 @@ export default function OrdersPage() {
                 <td className="px-4 py-3 text-right">
                   {o.status === "draft" && <button type="button" className="text-xs text-brand" onClick={() => setItems(setStatus(o.id, "pending"))}>Confirm</button>}
                   {o.status === "pending" && <button type="button" className="text-xs text-brand" onClick={() => setItems(setStatus(o.id, "paid"))}>Mark paid</button>}
+                  {o.status !== "cancelled" && o.status !== "paid" ? <button type="button" className="ml-2 text-xs text-stone-400" onClick={() => setItems(setStatus(o.id, "cancelled"))}>Cancel</button> : null}
                 </td>
               </tr>
             ))}</tbody>
