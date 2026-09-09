@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Card, PageHeader } from "@/components/app-shell";
 import { loadProducts } from "@/lib/catalog";
+import { draftOrder } from "@/lib/orders";
 import { loadThreads, markRead, replyToThread, type Channel, type Thread } from "@/lib/inbox";
 const filters: ("all" | Channel)[] = ["all", "web", "facebook", "instagram", "whatsapp"];
 export default function InboxPage() {
@@ -13,9 +14,7 @@ export default function InboxPage() {
   const visible = threads.filter((t) => filter === "all" || t.channel === filter);
   const thread = threads.find((t) => t.id === active);
   async function send(as: "agent" | "ai") {
-    const text = input.trim();
-    if (!thread || !text) return;
-    setInput("");
+    const text = input.trim(); if (!thread || !text) return; setInput("");
     if (as === "agent") { setThreads(replyToThread(thread.id, "agent", text)); return; }
     const products = loadProducts();
     const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: thread.messages.at(-1)?.text || text, products, taught: [text] }) });
@@ -36,7 +35,14 @@ export default function InboxPage() {
         <Card className="flex min-h-[360px] flex-col p-0">
           {!thread ? <p className="p-8 text-center text-sm text-stone-500">Pick a thread.</p> : (
             <>
-              <div className="border-b px-4 py-3 text-sm font-medium">{thread.name} · {thread.channel}</div>
+              <div className="flex items-center justify-between border-b px-4 py-3 text-sm font-medium">
+                <span>{thread.name} · {thread.channel}</span>
+                <button type="button" className="rounded-full border px-3 py-1 text-xs" onClick={() => {
+                  const p = loadProducts()[0];
+                  const order = draftOrder({ threadId: thread.id, customer: thread.name, channel: thread.channel, lines: p ? [{ sku: p.sku, title: p.title, qty: 1, price: p.price, currency: p.currency }] : [{ sku: "TBD", title: "Draft line", qty: 1, price: 0, currency: "USD" }] });
+                  setThreads(replyToThread(thread.id, "agent", `Draft ${order.id} created. Confirm on Orders.`));
+                }}>Draft order</button>
+              </div>
               <div className="flex-1 space-y-2 overflow-y-auto p-4">{thread.messages.map((m) => (
                 <div key={m.id} className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.from === "customer" ? "bg-stone-100" : m.from === "ai" ? "ml-auto bg-brand-tint" : "ml-auto bg-stone-900 text-white"}`}><p className="text-[10px] uppercase opacity-60">{m.from}</p>{m.text}</div>
               ))}</div>
