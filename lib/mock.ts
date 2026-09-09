@@ -28,6 +28,7 @@ export const nav: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/inbox", label: "Inbox" },
   { href: "/connect", label: "Connect" },
+  { href: "/widget", label: "Widget" },
   {
     href: "/orders",
     label: "Sales",
@@ -52,5 +53,12 @@ export const nav: NavItem[] = [
   { href: "/help", label: "Help" },
 ];
 
-export const products: { id: string; title: string; sku: string; price: number; stock: number }[] = [];
+export const products: {
+  id: string;
+  title: string;
+  sku: string;
+  price: number;
+  stock: number;
+}[] = [];
+
 export const orders: unknown[] = [];
