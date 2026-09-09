@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum MemberRole { owner admin agent analyst email_marketer }
+enum OrderStatus { draft pending paid cancelled refunded }
+enum CreditReason { grant purchase debit_live_reply debit_test debit_embed debit_vision hold release refund }
+model Workspace {
+  id String @id @default(uuid())
+  name String
+  country String @default("US")
+  currency String @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members Membership[]
+  products Product[]
+  threads Thread[]
+  orders Order[]
+  credits CreditEntry[]
+  contacts Contact[]
+}
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  name String?
+  createdAt DateTime @default(now())
+  members Membership[]
+}
+model Membership {
+  id String @id @default(uuid())
+  workspaceId String
+  userId String
+  role MemberRole @default(agent)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+}
+model Product {
+  id String @id @default(uuid())
+  workspaceId String
+  sku String
+  title String
+  description String @default("")
+  category String @default("")
+  price Decimal @db.Decimal(12, 2)
+  stock Int @default(0)
+  currency String @default("USD")
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, sku])
+  @@index([workspaceId])
+}
+model Thread {
+  id String @id @default(uuid())
+  workspaceId String
+  name String
+  channel String
+  unread Boolean @default(true)
+  slaDueAt DateTime?
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  messages Message[]
+  @@index([workspaceId])
+}
+model Message {
+  id String @id @default(uuid())
+  threadId String
+  from String
+  text String
+  createdAt DateTime @default(now())
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+}
+model Order {
+  id String @id @default(uuid())
+  workspaceId String
+  customer String
+  channel String
+  status OrderStatus @default(draft)
+  note String?
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  lines OrderLine[]
+  @@index([workspaceId])
+}
+model OrderLine {
+  id String @id @default(uuid())
+  orderId String
+  sku String
+  title String
+  qty Int
+  price Decimal @db.Decimal(12, 2)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+model CreditEntry {
+  id String @id @default(uuid())
+  workspaceId String
+  reason CreditReason
+  delta Int
+  balanceAfter Int
+  note String @default("")
+  idempotencyKey String
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, idempotencyKey])
+  @@index([workspaceId])
+}
+model Contact {
+  id String @id @default(uuid())
+  workspaceId String
+  email String
+  firstName String @default("")
+  lastName String @default("")
+  phone String @default("")
+  country String @default("")
+  locale String @default("en")
+  tags String @default("")
+  source String @default("")
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, email])
+  @@index([workspaceId])
+}
