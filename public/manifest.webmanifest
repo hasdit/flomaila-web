@@ -1,0 +1,8 @@
+{
+  "name": "Flomaila",
+  "short_name": "Flomaila",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#C2410C"
+}
