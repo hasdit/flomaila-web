@@ -1,0 +1,15 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "Flomaila P0", "version": "0.2.0" },
+  "paths": {
+    "/api/ready": { "get": { "summary": "Ready" } },
+    "/api/products": { "get": { "summary": "List" }, "post": { "summary": "Create" } },
+    "/api/orders": { "get": { "summary": "List" }, "post": { "summary": "Create" } },
+    "/api/threads": { "get": { "summary": "List" }, "post": { "summary": "Create" } },
+    "/api/credits": { "get": { "summary": "Ledger" }, "post": { "summary": "Append" } },
+    "/api/contacts": { "get": { "summary": "List" }, "post": { "summary": "Upsert" } },
+    "/api/seed": { "post": { "summary": "Seed workspace" } },
+    "/api/webhooks/inbound": { "post": { "summary": "Inbound" } },
+    "/api/widget/chat": { "post": { "summary": "Public chat" } }
+  }
+}
