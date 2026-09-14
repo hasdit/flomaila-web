@@ -8,5 +8,5 @@ export const metadata: Metadata = {
   keywords: ["flomaila", "ai inbox", "ecommerce chatbot"],
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (<html lang="en"><body><AppShell>{children}</AppShell></body></html>);
+  return (<html lang="en"><head><link rel="manifest" href="/manifest.webmanifest" /><meta name="theme-color" content="#C2410C" /></head><body><AppShell>{children}</AppShell></body></html>);
 }
