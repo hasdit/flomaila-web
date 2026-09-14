@@ -1,19 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
-import { catalog, loadConnectors, saveConnector, type Connector } from "@/lib/connect";
+import { Card, PageHeader } from "@/components/app-shell";
+import { disconnect, loadConnectors, saveConnector, type Connector } from "@/lib/connect";
 import { toast } from "@/lib/toast";
-export default function ConnectWizard() {
-  const [step, setStep] = useState(0);
-  const [id, setId] = useState("web");
-  const [key, setKey] = useState("");
+const families = ["All", "Messaging", "Commerce", "Ads", "Courier", "Payments", "Email"] as const;
+export default function ConnectPage() {
   const [items, setItems] = useState<Connector[]>([]);
-  const [ping, setPing] = useState<"idle" | "ok" | "fail">("idle");
+  const [fam, setFam] = useState<(typeof families)[number]>("All");
+  const [health, setHealth] = useState<Record<string, string>>({});
   useEffect(() => { setItems(loadConnectors()); }, []);
-  const chosen = catalog.find((c) => c.id === id)!;
-  return (<div className="mx-auto max-w-xl space-y-4"><p className="text-sm text-stone-500">Step {step + 1} / 4</p>
-    {step === 0 && <div className="grid gap-2 sm:grid-cols-2">{catalog.map((c) => <button key={c.id} type="button" onClick={() => setId(c.id)} className={`rounded-2xl border p-3 text-left ${id === c.id ? "border-brand bg-orange-50" : "bg-white"}`}><p className="text-[11px] uppercase text-stone-400">{c.family}</p><p className="font-medium">{c.name}</p></button>)}<button type="button" className="col-span-full rounded-full bg-stone-900 py-2 text-sm text-white" onClick={() => setStep(1)}>Continue</button></div>}
-    {step === 1 && <div className="rounded-2xl border bg-white p-4"><p className="font-medium">Paste key for {chosen.name}</p><input value={key} onChange={(e) => setKey(e.target.value)} className="mt-3 w-full rounded-xl border px-3 py-2 text-sm" placeholder="token" /><button type="button" className="mt-3 rounded-full bg-stone-900 px-4 py-2 text-sm text-white" onClick={() => setStep(2)}>Save & ping</button></div>}
-    {step === 2 && <div className="rounded-2xl border bg-white p-4"><p className="text-sm">Local ping — live API waits for env.</p><button type="button" className="mt-3 rounded-full bg-brand px-4 py-2 text-sm text-white" onClick={() => { const ok = key.trim().length >= 4; setPing(ok ? "ok" : "fail"); if (ok) setItems(saveConnector(id, key)); toast(ok ? "Ping ok" : "Key too short"); }}>Run ping</button>{ping === "ok" && <button type="button" className="ml-2 rounded-full border px-4 py-2 text-sm" onClick={() => setStep(3)}>Next</button>}</div>}
-    {step === 3 && <div className="rounded-2xl border bg-emerald-50 p-6 text-center"><p className="text-lg font-semibold text-emerald-800">Connected</p><p className="mt-1 text-sm text-emerald-700">{chosen.name} ready.</p></div>}
-    <p className="text-xs text-stone-400">{items.filter((i) => i.connected).length} channels stored</p></div>);
+  const shown = items.filter((c) => fam === "All" || c.family === fam);
+  return (<><PageHeader title="Connect" desc="Channels · Stores · Ads · Couriers · Payments." />
+    <div className="mb-3 flex flex-wrap gap-1 text-xs">{families.map((f) => <button key={f} type="button" onClick={() => setFam(f)} className={`rounded-full px-3 py-1 ${fam === f ? "bg-stone-900 text-white" : "bg-stone-100"}`}>{f}</button>)}</div>
+    <div className="grid gap-3 sm:grid-cols-2">{shown.map((c) => <Card key={c.id}><div className="flex items-start justify-between gap-2"><div><p className="text-[11px] uppercase tracking-wide text-brand">{c.family}</p><p className="mt-1 font-medium">{c.name}</p><p className="mt-1 text-xs text-stone-500">{c.connected ? c.keyHint : "Not connected"}</p></div><span className={`rounded-full px-2 py-0.5 text-[11px] ${c.connected ? "bg-emerald-50 text-emerald-700" : "bg-stone-100 text-stone-500"}`}>{c.connected ? "on" : "off"}</span></div>
+      <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); const key = String(new FormData(e.currentTarget).get("key") || ""); setItems(saveConnector(c.id, key)); toast(key ? "Saved" : "Empty"); e.currentTarget.reset(); }}><input name="key" placeholder="API key" className="flex-1 rounded-full border px-3 py-1 text-sm" /><button className="rounded-full bg-brand px-3 py-1 text-sm text-white" type="submit">Save</button></form>
+      <div className="mt-2 flex gap-2 text-xs"><button type="button" className="rounded-full border px-2 py-1" onClick={() => { const ok = c.connected; setHealth((h) => ({ ...h, [c.id]: ok ? "green" : "red" })); toast(ok ? "Ping ok" : "Connect first"); }}>Health</button><button type="button" className="rounded-full border px-2 py-1" onClick={() => { setItems(disconnect(c.id)); toast("Revoked"); }}>Revoke</button></div></Card>)}</div></>);
 }
